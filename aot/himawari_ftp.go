@@ -3,7 +3,6 @@ package aot
 import (
 	"github.com/jlaffaye/ftp"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -21,8 +20,8 @@ func (client *HimawariFtpClient) Init() {
 	client.Account = "www.875773677_qq.com"
 	client.Password = "SP+wari8"
 	client.Host = "ftp.ptree.jaxa.jp:21"
-	client.AOTWorkDir = "/Users/ye/Desktop/himawari/AOT/"
-	client.AHIWorkDir = "/Users/ye/Desktop/himawari/AHI/"
+	client.AOTWorkDir = "/home/admin/himawari/AOT/"
+	client.AHIWorkDir = "/home/admin/himawari/AHI/"
 }
 
 const FTPAOTDir = "/pub/himawari/L2/ARP/030/"
@@ -94,23 +93,25 @@ func (client *HimawariFtpClient) DownloadAOT() error {
 				return nil
 			}
 
-			buf, err := ioutil.ReadAll(r)
+			file, err := os.Create(filePath + entry.Name)
 			if err != nil {
-				logrus.WithError(err).Error("read from ftp response failed")
+				logrus.WithError(err).Error("create file failed")
 				return err
 			}
-			err = r.Close()
-			if err != nil {
-				logrus.WithError(err).Error("close response failed")
-				return err
+			for {
+				var buf = make([]byte, 1024)
+				n, _ := r.Read(buf)
+				if n == 0 {
+					break
+				}
+				file.Write(buf[:n])
 			}
-			err = ioutil.WriteFile(filePath+entry.Name, buf, 0664)
-			if err != nil {
-				logrus.WithError(err).Error("write file failed")
-				return err
-			}
+			file.Close()
+			r.Close()
 		}
 	}
+	con.Logout()
+	con.Quit()
 	return nil
 }
 
@@ -158,28 +159,30 @@ func (client *HimawariFtpClient) DownloadAHI() error {
 				return nil
 			}
 
-			buf, err := ioutil.ReadAll(r)
+			file, err := os.Create(filePath + entry.Name)
 			if err != nil {
-				logrus.WithError(err).Error("read from ftp response failed")
+				logrus.WithError(err).Error("create file failed")
 				return err
 			}
-			err = r.Close()
-			if err != nil {
-				logrus.WithError(err).Error("close response failed")
-				return err
+			for {
+				var buf = make([]byte, 1024)
+				n, _ := r.Read(buf)
+				if n == 0 {
+					break
+				}
+				file.Write(buf[:n])
 			}
-			err = ioutil.WriteFile(filePath+entry.Name, buf, 0664)
-			if err != nil {
-				logrus.WithError(err).Error("write file failed")
-				return err
-			}
+			file.Close()
+			r.Close()
 		}
 	}
+	con.Logout()
+	con.Quit()
 	return nil
 }
 
 func (client *HimawariFtpClient) getConnection() (*ftp.ServerConn, error) {
-	logrus.Infof("time %v, start dialing", time.Now().String())
+	//logrus.Infof("time %v, start dialing", time.Now().String())
 	con, err := ftp.Dial(client.Host, ftp.DialWithTimeout(10*time.Second))
 	if err != nil {
 		logrus.WithError(err).Error("connect to ftp server failed")
