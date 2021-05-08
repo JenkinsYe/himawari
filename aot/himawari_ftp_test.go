@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetL2Path(t *testing.T) {
-	path := getL2Path()
+	path := GetAOTPath(1)
 	fmt.Printf("path %v", path)
 }
 
@@ -20,4 +20,9 @@ func TestDownloadAHI(t *testing.T) {
 	var FtpClient HimawariFtpClient
 	FtpClient.Init()
 	FtpClient.DownloadAHI()
+}
+
+func TestGetAHIPath(t *testing.T) {
+	path := GetAHIPath(0)
+	fmt.Printf("path %v", path)
 }

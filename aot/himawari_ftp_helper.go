@@ -8,13 +8,16 @@ import (
 	"time"
 )
 
-func getAOTPath() string {
-	time := time.Now().UTC()
-
+func GetAOTPath(tolerance int) string {
+	t := time.Now()
+	for i := 0; i < tolerance; i++ {
+		t = t.Add(-time.Hour)
+	}
+	time := t.UTC()
 	year := strconv.Itoa(time.Year())
 	month := strconv.Itoa(int(time.Month()))
 	day := strconv.Itoa(time.Day())
-	hour := strconv.Itoa(time.Hour() - 1)
+	hour := strconv.Itoa(time.Hour())
 	if len(month) < 2 {
 		month = fmt.Sprintf("0%s", month)
 	}
@@ -27,9 +30,12 @@ func getAOTPath() string {
 	return fmt.Sprintf("%s%s/%s/%s/", year, month, day, hour)
 }
 
-func getAHIPath() string {
-	time := time.Now().UTC()
-
+func GetAHIPath(tolerance int) string {
+	t := time.Now()
+	for i := 0; i < tolerance; i++ {
+		t = t.Add(-time.Hour * 24)
+	}
+	time := t.UTC()
 	year := strconv.Itoa(time.Year())
 	month := strconv.Itoa(int(time.Month()))
 	day := strconv.Itoa(time.Day())

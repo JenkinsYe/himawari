@@ -12,21 +12,21 @@ func RunScheduledJobs() {
 	ftpClient.Init()
 
 	cronjobs := cron.New()
-	cronjobs.AddFunc("@every 5m", func() {
+	cronjobs.AddFunc("@every 10m", func() {
 		logger := logrus.WithField("job id", time.Now().Unix())
 		logger.Infof("----- CronJob DownloadAOT Start -----")
 		err := ftpClient.DownloadAOT()
 		if err != nil {
-			logger.WithError(err).Error("----- CronJob DownloadAOT failed -----")
+			logger.WithError(err).Error("----- CronJob DownloadAOT Failed -----")
 		}
 	})
 
-	cronjobs.AddFunc("@every 30m", func() {
+	cronjobs.AddFunc("@every 25m", func() {
 		logger := logrus.WithField("job id", time.Now().Unix())
 		logger.Infof("----- CronJob DownloadAHI Start -----")
 		err := ftpClient.DownloadAHI()
 		if err != nil {
-			logger.WithError(err).Error("----- CronJob DownloadAHI failed -----")
+			logger.WithError(err).Error("----- CronJob DownloadAHI Failed -----")
 		}
 	})
 	cronjobs.Run()
